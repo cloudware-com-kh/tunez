@@ -23,12 +23,6 @@ defmodule TunezWeb.Artists.IndexLive do
       |> assign(:artists, artists)
 
     {:noreply, socket}
-
-    socket =
-      socket
-      |> assign(:artists, artists)
-
-    {:noreply, socket}
   end
 
   def render(assigns) do
