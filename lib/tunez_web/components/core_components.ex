@@ -79,6 +79,93 @@ defmodule TunezWeb.CoreComponents do
     """
   end
 
+  slot :inner_block
+
+  def h1(assigns) do
+    ~H"""
+    <h1 class="text-3xl font-semibold leading-8 py-2">
+      {render_slot(@inner_block)}
+    </h1>
+    """
+  end
+
+  attr :kind, :string,
+    values: ~w(base primary error),
+    default: "base"
+
+  attr :inverse, :boolean, default: false
+  attr :size, :string, values: ~w(sm xs md), default: "md"
+  attr :class, :string, default: ""
+  attr :rest, :global, include: ~w(navigate disabled patch)
+
+  slot :inner_block
+
+  def button_link(assigns) do
+    assigns =
+      assign(assigns, :theme, button_styles(assigns.kind, assigns.inverse, assigns.size))
+
+    ~H"""
+    <.link
+      class={[
+        @theme,
+        @rest[:disabled] && "opacity-60 grayscale pointer-events-none",
+        @class
+      ]}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </.link>
+    """
+  end
+
+  def button_styles(kind, inverse, size) do
+    theme =
+      case {kind, inverse} do
+        {"base", false} ->
+          "bg-gray-100"
+
+        {"base", true} ->
+          "border border-gray-500 text-gray-600"
+
+        {"primary", false} ->
+          "bg-primary-600 hover:bg-primary-700 text-white"
+
+        {"primary", true} ->
+          "border border-primary-700 text-primary-700 hover:bg-primary-50 font-semibold"
+
+        {"error", false} ->
+          "bg-error-700 hover:bg-error-800 text-white"
+
+        {"error", true} ->
+          "text-error-600 underline"
+
+        _ ->
+          ""
+      end
+
+    [
+      "phx-submit-loading:opacity-75 rounded-lg font-medium leading-none inline-block",
+      size == "md" && "py-3 px-5 text-sm",
+      size == "sm" && "py-2 px-3 text-sm",
+      size == "xs" && "py-2 px-2 text-xs",
+      theme
+    ]
+  end
+
+  attr :image, :string, default: nil
+
+  def cover_image(assigns) do
+    ~H"""
+    <%= if @image do %>
+      <img src={@image} class="block aspect-square rounded-md w-full" />
+    <% else %>
+      <div class="border border-gray-300 place-content-center grid rounded-md aspect-square">
+        <.icon name="hero-photo" class="bg-gray-300 w-8 h-8" />
+      </div>
+    <% end %>
+    """
+  end
+
   @doc """
   Renders a button with navigation support.
 
