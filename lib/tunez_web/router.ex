@@ -17,8 +17,7 @@ defmodule TunezWeb.Router do
   scope "/", TunezWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
-    live "/artists", Artists.IndexLive
+    live "/", Artists.IndexLive
     live "/artists/:id", Artists.ShowLive
   end
 

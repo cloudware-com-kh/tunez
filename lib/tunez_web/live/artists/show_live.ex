@@ -35,7 +35,7 @@ defmodule TunezWeb.Artists.ShowLive do
         <.h1>
           {@artist.name}
         </.h1>
-        <:actions>
+        <:action>
           <.button_link
             kind="error"
             inverse
@@ -44,10 +44,12 @@ defmodule TunezWeb.Artists.ShowLive do
           >
             Delete Artist
           </.button_link>
+        </:action>
+        <:action>
           <.button_link navigate={~p"/artists/#{@artist.id}/edit"} kind="primary" inverse>
             Edit Artist
           </.button_link>
-        </:actions>
+        </:action>
       </.header>
       <div class="mb-6">{formatted(@artist.biography)}</div>
 
@@ -71,11 +73,11 @@ defmodule TunezWeb.Artists.ShowLive do
         <.cover_image image={@album.cover_image_url} />
       </div>
       <div class="flex-1">
-        <.header>
+        <.header class="pl-3 pr-2 !m-0">
           <.h2>
             {@album.name} ({@album.year_released})
           </.h2>
-          <:actions>
+          <:action>
             <.button_link
               size="sm"
               inverse
@@ -86,10 +88,12 @@ defmodule TunezWeb.Artists.ShowLive do
             >
               Delete
             </.button_link>
+          </:action>
+          <:action>
             <.button_link size="sm" kind="primary" inverse navigate={~p"/albums/#{@album.id}/edit"}>
               Edit
             </.button_link>
-          </:actions>
+          </:action>
         </.header>
         <.track_details tracks={[]} />
       </div>

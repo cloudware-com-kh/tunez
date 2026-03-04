@@ -12,6 +12,8 @@ defmodule Tunez.Application do
       Tunez.Repo,
       {DNSCluster, query: Application.get_env(:tunez, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Tunez.PubSub},
+      # Start the Finch HTTP client for sending emails
+      {Finch, name: Tunez.Finch},
       # Start a worker by calling: Tunez.Worker.start_link(arg)
       # {Tunez.Worker, arg},
       # Start to serve requests, typically the last entry

@@ -40,9 +40,8 @@ defmodule TunezWeb do
     quote do
       use Phoenix.Controller, formats: [:html, :json]
 
-      use Gettext, backend: TunezWeb.Gettext
-
       import Plug.Conn
+      use Gettext, backend: TunezWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -64,6 +63,14 @@ defmodule TunezWeb do
     end
   end
 
+  def component do
+    quote do
+      use Phoenix.Component
+
+      unquote(html_helpers())
+    end
+  end
+
   def html do
     quote do
       use Phoenix.Component
@@ -79,13 +86,11 @@ defmodule TunezWeb do
 
   defp html_helpers do
     quote do
-      # Translation
-      use Gettext, backend: TunezWeb.Gettext
-
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components
+      # Core UI components and translation
       import TunezWeb.CoreComponents
+      use Gettext, backend: TunezWeb.Gettext
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

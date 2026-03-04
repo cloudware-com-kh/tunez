@@ -18,7 +18,7 @@ config :tunez, Tunez.Repo,
 # you can enable the server option below.
 config :tunez, TunezWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "4FCh2qkTbcmW9ZEt7nllq83ZOZ5kD5n2kLMkegt14kldvpCXF8vW09Zt9X+rVDMJ",
+  secret_key_base: "juvWYF54fW6O46xWjNKvoSyt24rsG4J6/T0bv1YgNqVwRSxCqGj7Qumm1G0seN74",
   server: false
 
 # In test we don't send emails
@@ -37,6 +37,4 @@ config :phoenix, :plug_init_mode, :runtime
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
 
-# Sort query params output of verified routes for robust url comparisons
-config :phoenix,
-  sort_verified_routes_query_params: true
+config :phoenix_test, :endpoint, TunezWeb.Endpoint

@@ -7,14 +7,30 @@ defmodule Tunez.Music.Artist do
   end
 
   actions do
-    defaults [:read, :destroy, :create, :update]
-    default_accept [:name, :biography]
+    defaults [:read]
+
+    create :create do
+      accept [:name, :biography]
+    end
+
+    update :update do
+      accept [:name, :biography]
+    end
+
+    destroy :destroy do
+    end
   end
 
   attributes do
     uuid_primary_key :id
-    attribute :name, :string
+
+    attribute :name, :string do
+      allow_nil? false
+    end
+
     attribute :biography, :string
-    timestamps()
+
+    create_timestamp :inserted_at
+    update_timestamp :updated_at
   end
 end

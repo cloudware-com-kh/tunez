@@ -24,13 +24,13 @@ defmodule TunezWeb.Artists.IndexLive do
   def render(assigns) do
     ~H"""
     <Layouts.app {assigns}>
-      <.header>
+      <.header responsive={false}>
         <.h1>Artists</.h1>
-        <:actions>
+        <:action>
           <.button_link navigate={~p"/artists/new"} kind="primary">
             New Artist
           </.button_link>
-        </:actions>
+        </:action>
       </.header>
 
       <div :if={@artists == []} class="p-8 text-center">
@@ -141,6 +141,7 @@ defmodule TunezWeb.Artists.IndexLive do
         options={@options}
         value={@selected}
         class="px-2 py-0.5 !w-fit !inline-block pr-8 text-sm"
+        container_class="!inline-block"
       />
     </form>
     """

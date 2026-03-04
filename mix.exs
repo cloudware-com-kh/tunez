@@ -5,14 +5,14 @@ defmodule Tunez.MixProject do
     [
       app: :tunez,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      consolidate_protocols: Mix.env() != :dev,
       aliases: aliases(),
       deps: deps(),
-      compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader],
-      consolidate_protocols: Mix.env() != :dev
+      compilers: [:phoenix_live_view] ++ Mix.compilers()
     ]
   end
 
@@ -26,12 +26,6 @@ defmodule Tunez.MixProject do
     ]
   end
 
-  def cli do
-    [
-      preferred_envs: [precommit: :test]
-    ]
-  end
-
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
@@ -41,24 +35,23 @@ defmodule Tunez.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ash_phoenix, "~> 2.0"},
       {:ash_postgres, "~> 2.0"},
       {:sourceror, "~> 1.8", only: [:dev, :test]},
-      {:igniter, "~> 0.7.2", only: [:dev]},
       {:ash, "~> 3.0"},
-      {:phoenix, "~> 1.8.4"},
+      {:phoenix, "~> 1.8.0"},
       {:phoenix_ecto, "~> 4.5"},
-      {:ecto_sql, "~> 3.13"},
+      {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.1.0"},
-      {:lazy_html, ">= 0.1.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
-       tag: "v2.2.0",
+       tag: "v2.1.1",
        sparse: "optimized",
        app: false,
        compile: false,
@@ -67,10 +60,13 @@ defmodule Tunez.MixProject do
       {:req, "~> 0.5"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 1.0"},
+      {:gettext, "~> 1.0.0"},
       {:jason, "~> 1.2"},
-      {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:dns_cluster, "~> 0.2"},
+      {:bandit, "~> 1.5"},
+      {:igniter, "~> 0.3", only: [:dev]},
+      {:lazy_html, ">= 0.0.0", only: :test},
+      {:phoenix_test, "~> 0.9", only: :test, runtime: false}
     ]
   end
 
@@ -83,22 +79,21 @@ defmodule Tunez.MixProject do
   defp aliases do
     [
       setup: ["deps.get", "ash.setup", "assets.setup", "assets.build", "run priv/repo/seeds.exs"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ash.setup --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["compile", "tailwind tunez", "esbuild tunez"],
-      "assets.deploy": [
-        "tailwind tunez --minify",
-        "esbuild tunez --minify",
-        "phx.digest"
-      ],
+      "ecto.setup": ["ecto.create", "ecto.migrate"],
       seed: [
         "run priv/repo/seeds/01-artists.exs"
         # "run priv/repo/seeds/02-albums.exs",
         # "run priv/repo/seeds/08-tracks.exs"
       ],
-      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      test: ["ash.setup --quiet", "test"],
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.build": ["tailwind tunez", "esbuild tunez"],
+      "assets.deploy": [
+        "tailwind tunez --minify",
+        "esbuild tunez --minify",
+        "phx.digest"
+      ]
     ]
   end
 end

@@ -1,18 +1,17 @@
 # Tunez
 
-To start your Phoenix server:
+The starter app for the upcoming [Ash Framework](https://pragprog.com/titles/ldash/ash-framework/) book.
 
-* Run `mix setup` to install and setup dependencies
+## Setup
+
+The versions of Elixir and Erlang we're using are specified in the `.tool-versions` file. Tunez should work with any reasonably recent versions, but newer is better!
+
+* If you're using `asdf` to manage installed versions of languages, run `asdf install` to install them. 
+* If you're using `mise` to manage installed versions of languages, run `mise install` to install them. 
+
+Once you have those installed:
+
+* Run `mix setup` to install and setup Elixir dependencies
 * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-* Official website: https://www.phoenixframework.org/
-* Guides: https://hexdocs.pm/phoenix/overview.html
-* Docs: https://hexdocs.pm/phoenix
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
