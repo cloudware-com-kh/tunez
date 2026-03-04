@@ -19,6 +19,7 @@ defmodule TunezWeb.Router do
 
     get "/", PageController, :home
     live "/artists", Artists.IndexLive
+    live "/artists/:id", Artists.ShowLive
   end
 
   # Other scopes may use custom stacks.
