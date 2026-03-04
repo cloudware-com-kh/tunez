@@ -43,6 +43,7 @@ defmodule Tunez.MixProject do
     [
       {:ash_postgres, "~> 2.0"},
       {:sourceror, "~> 1.8", only: [:dev, :test]},
+      {:igniter, "~> 0.7.2", only: [:dev]},
       {:ash, "~> 3.0"},
       {:phoenix, "~> 1.8.4"},
       {:phoenix_ecto, "~> 4.5"},
