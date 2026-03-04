@@ -47,7 +47,8 @@ config :spark,
 
 config :tunez,
   ecto_repos: [Tunez.Repo],
-  generators: [timestamp_type: :utc_datetime, binary_id: true]
+  generators: [timestamp_type: :utc_datetime, binary_id: true],
+  ash_domains: [Tunez.Music]
 
 # Configure the endpoint
 config :tunez, TunezWeb.Endpoint,

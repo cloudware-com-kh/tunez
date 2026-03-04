@@ -93,6 +93,11 @@ defmodule Tunez.MixProject do
         "esbuild tunez --minify",
         "phx.digest"
       ],
+      seed: [
+        "run priv/repo/seeds/01-artists.exs"
+        # "run priv/repo/seeds/02-albums.exs",
+        # "run priv/repo/seeds/08-tracks.exs"
+      ],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
     ]
   end
