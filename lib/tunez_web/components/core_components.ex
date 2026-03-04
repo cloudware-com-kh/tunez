@@ -81,6 +81,16 @@ defmodule TunezWeb.CoreComponents do
 
   slot :inner_block
 
+  def h2(assigns) do
+    ~H"""
+    <h2 class="text-xl font-semibold">
+      {render_slot(@inner_block)}
+    </h2>
+    """
+  end
+
+  slot :inner_block
+
   def h1(assigns) do
     ~H"""
     <h1 class="text-3xl font-semibold leading-8 py-2">
