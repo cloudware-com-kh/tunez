@@ -18,6 +18,8 @@ defmodule TunezWeb.Router do
     pipe_through :browser
 
     live "/", Artists.IndexLive
+    live "/artists/new", Artists.FormLive
+    live "/artists/:id/edit", Artists.FormLive
     live "/artists/:id", Artists.ShowLive
   end
 
