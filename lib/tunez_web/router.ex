@@ -23,6 +23,7 @@ defmodule TunezWeb.Router do
     live "/artists/:id", Artists.ShowLive
     # Album
     live "/artists/:artist_id/albums/new", Albums.FormLive
+    live "/albums/:id/edit", Albums.FormLive
   end
 
   # Other scopes may use custom stacks.
