@@ -20,7 +20,7 @@ defmodule Tunez.Music.Artist do
       end
 
       filter expr(contains(name, ^arg(:query)))
-      # In db data layer will be ci_string + contains "WHERE name ILIKE '%query%'"
+      pagination offset?: true, default_limit: 5
     end
 
     create :create do

@@ -1,6 +1,6 @@
 defmodule Tunez.Lab do
   def run() do
-    Tunez.Music.search_artists("dolor")
+    Tunez.Music.search_artists("")
   end
 end
 
