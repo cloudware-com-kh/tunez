@@ -27,7 +27,8 @@ defmodule Tunez.Music.Changes.UpdatePreviousNames do
     if String.contains?(new_name, "fuck") do
       Ash.Changeset.add_error(changeset, field: :name, message: "No sexual word")
     else
-      Ash.Changeset.change_attribute(changeset, :previous_names, names)
+      changeset
+      |> Ash.Changeset.change_attribute(:previous_names, names)
     end
   end
 end
