@@ -1,5 +1,15 @@
 defmodule Tunez.Music.Artist do
-  use Ash.Resource, otp_app: :tunez, domain: Tunez.Music, data_layer: AshPostgres.DataLayer
+  use Ash.Resource,
+    otp_app: :tunez,
+    domain: Tunez.Music,
+    data_layer: AshPostgres.DataLayer,
+    extensions: [AshJsonApi.Resource]
+
+  json_api do
+    type "artist"
+    includes [:albums]
+    derive_filter? false
+  end
 
   postgres do
     table "artists"
@@ -10,11 +20,19 @@ defmodule Tunez.Music.Artist do
     end
   end
 
+  resource do
+    description "A person or group of people that makes and releases music."
+  end
+
   actions do
     defaults [:read]
 
     read :search do
+      description "List Artists, optionally filtering by name."
+
       argument :query, :ci_string do
+        description "Return only artists with names including the given value."
+
         constraints allow_empty?: true
         default ""
       end
@@ -47,9 +65,10 @@ defmodule Tunez.Music.Artist do
 
     attribute :previous_names, {:array, :string} do
       default []
+      public? true
     end
 
-    attribute :biography, :string
+    attribute :biography, :string, public?: true
 
     create_timestamp :inserted_at, public?: true
     update_timestamp :updated_at, public?: true
@@ -58,6 +77,7 @@ defmodule Tunez.Music.Artist do
   relationships do
     has_many :albums, Tunez.Music.Album do
       sort year_released: :desc
+      public? true
     end
   end
 
