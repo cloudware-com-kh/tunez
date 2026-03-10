@@ -3,7 +3,11 @@ defmodule Tunez.Music.Artist do
     otp_app: :tunez,
     domain: Tunez.Music,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshJsonApi.Resource]
+    extensions: [AshGraphql.Resource, AshJsonApi.Resource]
+
+  graphql do
+    type :artist
+  end
 
   json_api do
     type "artist"
@@ -70,8 +74,8 @@ defmodule Tunez.Music.Artist do
 
     attribute :biography, :string, public?: true
 
-    create_timestamp :inserted_at, public?: true
-    update_timestamp :updated_at, public?: true
+    create_timestamp :inserted_at
+    update_timestamp :updated_at
   end
 
   relationships do
@@ -90,6 +94,6 @@ defmodule Tunez.Music.Artist do
   aggregates do
     count :album_count, :albums, public?: true
     first :latest_album_year_released, :albums, field: :year_released, public?: true
-    first :cover_image_url, :albums, field: :cover_image_url
+    first :cover_image_url, :albums, field: :cover_image_url, public?: true
   end
 end

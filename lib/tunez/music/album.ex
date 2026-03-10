@@ -3,7 +3,11 @@ defmodule Tunez.Music.Album do
     otp_app: :tunez,
     domain: Tunez.Music,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshJsonApi.Resource]
+    extensions: [AshGraphql.Resource, AshJsonApi.Resource]
+
+  graphql do
+    type :album
+  end
 
   json_api do
     type "album"
@@ -47,26 +51,28 @@ defmodule Tunez.Music.Album do
   attributes do
     uuid_primary_key :id
     attribute :name, :string, allow_nil?: false, public?: true
-    attribute :year_released, :integer, allow_nil?: false
-    attribute :cover_image_url, :string
-    timestamps()
+    attribute :year_released, :integer, allow_nil?: false, public?: true
+    attribute :cover_image_url, :string, public?: true
+    timestamps(public?: true)
   end
 
   relationships do
     belongs_to :artist, Tunez.Music.Artist do
       allow_nil? false
+      public? true
     end
   end
 
+  def next_year, do: Date.utc_today().year + 1
+
   calculations do
-    calculate :years_ago, :integer, expr(2025 - year_released)
+    calculate :years_ago, :integer, expr(2025 - year_released), public?: true
 
     calculate :string_years_ago,
               :string,
-              expr("wow, this was released " <> years_ago <> " years ago!")
+              expr("wow, this was released " <> years_ago <> " years ago!"),
+              public?: true
   end
-
-  def next_year, do: Date.utc_today().year + 1
 
   identities do
     identity :unique_album_names_per_artist, [:name, :artist_id],
