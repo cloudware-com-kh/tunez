@@ -74,8 +74,7 @@ defmodule Tunez.Music.Artist do
 
     attribute :biography, :string, public?: true
 
-    create_timestamp :inserted_at
-    update_timestamp :updated_at
+    timestamps(public?: true)
   end
 
   relationships do
