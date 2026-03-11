@@ -23,6 +23,10 @@ defmodule Tunez.Music.Artist do
     custom_indexes do
       index "name gin_trgm_ops", name: "artists_name_gin_index", using: "GIN"
     end
+
+    references do
+      reference :user, index?: true, on_delete: :delete
+    end
   end
 
   resource do
@@ -48,6 +52,7 @@ defmodule Tunez.Music.Artist do
 
     create :create do
       accept [:name, :biography]
+      change relate_actor(:user, allow_nil?: true)
     end
 
     update :update do
@@ -61,9 +66,9 @@ defmodule Tunez.Music.Artist do
   end
 
   policies do
-    bypass actor_attribute_equals(:role, :admin) do
-      authorize_if always()
-    end
+    # bypass actor_attribute_equals(:role, :admin) do
+    #   authorize_if always()
+    # end
 
     policy action([:create]) do
       authorize_if actor_attribute_equals(:role, :editor)
@@ -71,6 +76,13 @@ defmodule Tunez.Music.Artist do
 
     policy action([:update]) do
       authorize_if actor_attribute_equals(:role, :editor)
+    end
+
+    policy action(:search) do
+      # filter check (sql query) send to query as or statement
+      authorize_if relates_to_actor_via(:user)
+      # simple check static data (not sql query) more powerful than filter check
+      authorize_if actor_attribute_equals(:role, :admin)
     end
 
     policy action_type([:read]) do
@@ -99,6 +111,10 @@ defmodule Tunez.Music.Artist do
   relationships do
     has_many :albums, Tunez.Music.Album do
       sort year_released: :desc
+      public? true
+    end
+
+    belongs_to :user, Tunez.Accounts.User do
       public? true
     end
   end

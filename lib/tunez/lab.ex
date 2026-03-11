@@ -16,16 +16,14 @@ defmodule Tunez.Lab do
   end
 
   def create_artist() do
-    fake_actor = %Tunez.Accounts.User{role: :editor}
-
+    actor = Tunez.Accounts.get_user_by_email!(@email, authorize?: false)
+    # Manual assign user_id to the artist
     Tunez.Music.create_artist(
       %{
-        name: "Test Artist without policy"
+        name: "Artist created by editor auto assign user_id without related"
       },
-      actor: fake_actor
+      actor: actor
     )
-
-    "Artist created"
   end
 end
 
