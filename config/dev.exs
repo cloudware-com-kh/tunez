@@ -1,5 +1,5 @@
 import Config
-config :ash, policies: [show_policy_breakdowns?: true]
+config :ash, policies: [show_policy_breakdowns?: true, log_policy_breakdowns: :error]
 
 # Configure your database
 config :tunez, Tunez.Repo,

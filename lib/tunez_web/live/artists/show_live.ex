@@ -9,7 +9,10 @@ defmodule TunezWeb.Artists.ShowLive do
 
   def handle_params(%{"id" => artist_id}, _url, socket) do
     artist =
-      Tunez.Music.get_artist_by_id!(artist_id, load: [:albums])
+      Tunez.Music.get_artist_by_id!(artist_id,
+        load: [:albums],
+        actor: socket.assigns.current_user
+      )
 
     socket =
       socket
@@ -142,7 +145,7 @@ defmodule TunezWeb.Artists.ShowLive do
   end
 
   def handle_event("destroy-artist", _params, socket) do
-    Tunez.Music.destroy_artist(socket.assigns.artist)
+    Tunez.Music.destroy_artist(socket.assigns.artist, actor: socket.assigns.current_user)
     |> case do
       :ok ->
         socket =
@@ -164,7 +167,7 @@ defmodule TunezWeb.Artists.ShowLive do
   end
 
   def handle_event("destroy-album", %{"id" => album_id}, socket) do
-    case Tunez.Music.destroy_album(album_id) do
+    case Tunez.Music.destroy_album(album_id, actor: socket.assigns.current_user) do
       :ok ->
         socket =
           socket
