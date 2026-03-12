@@ -25,7 +25,8 @@ defmodule Tunez.Music.Artist do
     end
 
     references do
-      reference :user, index?: true, on_delete: :delete
+      reference :created_by, index?: true
+      reference :updated_by, index?: true
     end
   end
 
@@ -52,7 +53,6 @@ defmodule Tunez.Music.Artist do
 
     create :create do
       accept [:name, :biography]
-      change relate_actor(:user, allow_nil?: true)
     end
 
     update :update do
@@ -70,24 +70,18 @@ defmodule Tunez.Music.Artist do
       authorize_if always()
     end
 
-    policy action([:create]) do
+    policy action([:create, :update]) do
       authorize_if actor_attribute_equals(:role, :editor)
     end
 
-    policy action([:update]) do
-      authorize_if actor_attribute_equals(:role, :editor)
-    end
-
-    policy action(:search) do
-      # filter check (sql query) send to query as or statement
-      authorize_if relates_to_actor_via(:user)
-      # simple check static data (not sql query) more powerful than filter check
-      authorize_if actor_attribute_equals(:role, :admin)
-    end
-
-    policy action_type([:read]) do
+    policy action_type(:read) do
       authorize_if always()
     end
+  end
+
+  changes do
+    change relate_actor(:created_by, allow_nil?: true), on: [:create]
+    change relate_actor(:updated_by, allow_nil?: true)
   end
 
   attributes do
@@ -114,9 +108,8 @@ defmodule Tunez.Music.Artist do
       public? true
     end
 
-    belongs_to :user, Tunez.Accounts.User do
-      public? true
-    end
+    belongs_to :created_by, Tunez.Accounts.User
+    belongs_to :updated_by, Tunez.Accounts.User
   end
 
   calculations do

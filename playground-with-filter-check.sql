@@ -1,48 +1,41 @@
-SELECT
-  s0."id",
-  s0."name",
-  s0."updated_at",
-  s0."inserted_at",
-  s0."biography",
-  s0."previous_names",
-  s0."user_id",
-  COALESCE(s1."album_count"::bigint, $1::bigint)::bigint,
-  s1."latest_album_year_released"::bigint::bigint,
-  s1."cover_image_url"::text::text
-FROM (
-  SELECT
-    sa0."id" AS "id",
-    sa0."name" AS "name",
-    sa0."updated_at" AS "updated_at",
-    sa0."inserted_at" AS "inserted_at",
-    sa0."biography" AS "biography",
-    sa0."previous_names" AS "previous_names",
-    sa0."user_id" AS "user_id"
-  FROM "artists" AS sa0
-  WHERE (
-      (
-        (sa0."name"::text = $2::text)
-        OR (sa0."biography"::text = $3::text)
+UPDATE "albums" AS a0
+SET
+  "updated_at" = (
+    CASE
+      WHEN (
+        (
+          NOT (a0."cover_image_url"::text IS NULL)
+          OR ($1::bigint != a0."year_released"::bigint)
+        )
+        OR ($2::text != a0."name"::text)
+        OR ($3::uuid != a0."updated_by_id"::uuid)
       )
-      OR NOT (sa0."user_id"::uuid IS NULL)
+      THEN $4::timestamp
+      ELSE a0."updated_at"::timestamp
+    END
+  ),
+  "cover_image_url" = NULL::text,
+  "year_released" = $5::bigint,
+  "name" = $6::text,
+  "updated_by_id" = $7
+WHERE
+  (a0."id"::uuid = $8::uuid)
+  AND (
+    (
+      CASE
+        WHEN a0."created_by_id"::uuid = $9::uuid
+        THEN $10
+        ELSE ash_raise_error($11::jsonb)
+      END
     )
-    AND (sa0."name"::text ILIKE $4)
-  ORDER BY
-    sa0."updated_at" DESC,
-    sa0."id"
-  LIMIT $5
-) AS s0
-LEFT OUTER JOIN LATERAL (
-  SELECT
-    sa0."artist_id" AS "artist_id",
-    COALESCE(count(*) FILTER (WHERE $6), $7::bigint)::bigint AS "album_count",
-    any_value(sa0."year_released"::bigint ORDER BY sa0."year_released" DESC)
-      FILTER (WHERE $8 AND NOT (sa0."year_released"::bigint IS NULL))::bigint AS "latest_album_year_released",
-    any_value(sa0."cover_image_url"::text ORDER BY sa0."year_released" DESC)
-      FILTER (WHERE $9 AND NOT (sa0."cover_image_url"::text IS NULL))::text AS "cover_image_url"
-  FROM "public"."albums" AS sa0
-  WHERE (s0."id" = sa0."artist_id")
-  GROUP BY sa0."artist_id"
-) AS s1 ON TRUE
-
--- Parameters: [0, "Nang", "Ravy", "%%", 13, true, 0, true, true]
+  )
+RETURNING
+  a0."id",
+  a0."name",
+  a0."year_released",
+  a0."cover_image_url",
+  a0."inserted_at",
+  a0."updated_at",
+  a0."artist_id",
+  a0."created_by_id",
+  a0."updated_by_id";

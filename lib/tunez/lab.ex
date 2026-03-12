@@ -1,5 +1,5 @@
 defmodule Tunez.Lab do
-  @email "editor@mail.com"
+  @email "admin@mail.com"
   @password "password"
 
   def register_user() do
@@ -20,10 +20,17 @@ defmodule Tunez.Lab do
     # Manual assign user_id to the artist
     Tunez.Music.create_artist(
       %{
-        name: "Artist created by editor auto assign user_id without related"
+        name: "Artist created by actor"
       },
       actor: actor
     )
+  end
+
+  def update_artist() do
+    id = "2f2f8082-0198-42dc-8ccb-7b3c45cf60ea"
+
+    actor = Tunez.Accounts.get_user_by_email!(@email, authorize?: false)
+    Tunez.Music.update_artist(id, %{name: "Artist updated by admin actor"}, actor: actor)
   end
 
   def use_can?() do
@@ -35,3 +42,4 @@ end
 # recompile; Tunez.Lab.register_user()
 # recompile; Tunez.Lab.use_can?()
 # recompile; Tunez.Lab.create_artist()
+# recompile; Tunez.Lab.update_artist()
