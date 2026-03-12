@@ -34,6 +34,7 @@ defmodule TunezWeb.Artists.ShowLive do
         </:subtitle>
         <:action>
           <.button_link
+            :if={Tunez.Music.can_destroy_artist?(@current_user, @artist)}
             kind="error"
             inverse
             data-confirm={"Are you sure you want to delete #{@artist.name}?"}
@@ -43,20 +44,29 @@ defmodule TunezWeb.Artists.ShowLive do
           </.button_link>
         </:action>
         <:action>
-          <.button_link navigate={~p"/artists/#{@artist.id}/edit"} kind="primary" inverse>
+          <.button_link
+            :if={Tunez.Music.can_update_artist?(@current_user, @artist)}
+            navigate={~p"/artists/#{@artist.id}/edit"}
+            kind="primary"
+            inverse
+          >
             Edit Artist
           </.button_link>
         </:action>
       </.header>
       <div class="mb-6">{formatted(@artist.biography)}</div>
 
-      <.button_link navigate={~p"/artists/#{@artist.id}/albums/new"} kind="primary">
+      <.button_link
+        :if={Tunez.Music.can_create_album?(@current_user)}
+        navigate={~p"/artists/#{@artist.id}/albums/new"}
+        kind="primary"
+      >
         New Album
       </.button_link>
 
       <ul class="mt-10 space-y-6 md:space-y-10">
         <li :for={album <- @artist.albums}>
-          <.album_details album={album} />
+          <.album_details album={album} current_user={@current_user} />
         </li>
       </ul>
     </Layouts.app>
@@ -76,6 +86,7 @@ defmodule TunezWeb.Artists.ShowLive do
           </.h2>
           <:action>
             <.button_link
+              :if={Tunez.Music.can_destroy_album?(@current_user, @album)}
               size="sm"
               inverse
               kind="error"
@@ -87,7 +98,13 @@ defmodule TunezWeb.Artists.ShowLive do
             </.button_link>
           </:action>
           <:action>
-            <.button_link size="sm" kind="primary" inverse navigate={~p"/albums/#{@album.id}/edit"}>
+            <.button_link
+              :if={Tunez.Music.can_update_album?(@current_user, @album)}
+              size="sm"
+              kind="primary"
+              inverse
+              navigate={~p"/albums/#{@album.id}/edit"}
+            >
               Edit
             </.button_link>
           </:action>

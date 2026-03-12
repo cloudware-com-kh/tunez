@@ -66,9 +66,9 @@ defmodule Tunez.Music.Artist do
   end
 
   policies do
-    # bypass actor_attribute_equals(:role, :admin) do
-    #   authorize_if always()
-    # end
+    bypass actor_attribute_equals(:role, :admin) do
+      authorize_if always()
+    end
 
     policy action([:create]) do
       authorize_if actor_attribute_equals(:role, :editor)

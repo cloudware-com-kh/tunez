@@ -25,8 +25,13 @@ defmodule Tunez.Lab do
       actor: actor
     )
   end
+
+  def use_can?() do
+    fake_actor = %Tunez.Accounts.User{role: :user}
+    Tunez.Music.can_create_artist?(fake_actor)
+  end
 end
 
 # recompile; Tunez.Lab.register_user()
-
+# recompile; Tunez.Lab.use_can?()
 # recompile; Tunez.Lab.create_artist()
