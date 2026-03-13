@@ -1,4 +1,4 @@
-defmodule Tunez.Repo.Migrations.AddUserToArtists do
+defmodule Tunez.Repo.Migrations.AddTrackedByUserToArtists do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
