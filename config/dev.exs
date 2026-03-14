@@ -4,7 +4,7 @@ config :ash, policies: [show_policy_breakdowns?: true, log_policy_breakdowns: :e
 # Configure your database
 config :tunez, Tunez.Repo,
   username: "postgres",
-  password: "VFOrPGPf6Dx1ovYYAC6DXwWi8CglYqW2BeqYwzN5GQ3nyRXiQqGZA2AHVZJJX4x4",
+  password: "postgres",
   hostname: "localhost",
   database: "tunez_dev",
   stacktrace: true,
