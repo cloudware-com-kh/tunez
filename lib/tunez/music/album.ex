@@ -34,16 +34,14 @@ defmodule Tunez.Music.Album do
       argument :artist_id, :uuid, allow_nil?: false
       argument :tracks, {:array, :map}
       change manage_relationship(:artist_id, :artist, type: :append_and_remove)
-      change manage_relationship(:tracks, type: :direct_control)
+      change manage_relationship(:tracks, type: :direct_control, order_is_key: :order)
     end
 
     update :update do
       accept [:name, :year_released, :cover_image_url]
       require_atomic? false
-      argument :artist_id, :uuid, allow_nil?: false
       argument :tracks, {:array, :map}
-      change manage_relationship(:artist_id, :artist, type: :append_and_remove)
-      change manage_relationship(:tracks, type: :direct_control)
+      change manage_relationship(:tracks, type: :direct_control, order_is_key: :order)
     end
   end
 
