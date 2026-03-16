@@ -12,6 +12,7 @@ defmodule Tunez.Music.Album do
 
   json_api do
     type "album"
+    includes [:tracks]
   end
 
   postgres do
@@ -97,6 +98,7 @@ defmodule Tunez.Music.Album do
 
     has_many :tracks, Tunez.Music.Track do
       sort order: :asc
+      public? true
     end
 
     belongs_to :created_by, Tunez.Accounts.User
@@ -112,6 +114,12 @@ defmodule Tunez.Music.Album do
               :string,
               expr("wow, this was released " <> years_ago <> " years ago!"),
               public?: true
+
+    calculate :duration, :string, Tunez.Music.Calculations.SecondsToMinutes
+  end
+
+  aggregates do
+    sum :duration_seconds, :tracks, :duration_seconds
   end
 
   identities do

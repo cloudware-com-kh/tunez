@@ -3,7 +3,17 @@ defmodule Tunez.Music.Track do
     otp_app: :tunez,
     domain: Tunez.Music,
     data_layer: AshPostgres.DataLayer,
-    authorizers: [Ash.Policy.Authorizer]
+    authorizers: [Ash.Policy.Authorizer],
+    extensions: [AshGraphql.Resource, AshJsonApi.Resource]
+
+  graphql do
+    type :track
+  end
+
+  json_api do
+    type "track"
+    default_fields [:number, :name, :duration]
+  end
 
   postgres do
     table "tracks"
@@ -19,12 +29,18 @@ defmodule Tunez.Music.Track do
 
     create :create do
       primary? true
-      accept [:order, :name, :duration_seconds, :album_id]
+      accept [:order, :name, :album_id]
+      argument :duration, :string, allow_nil?: false
+      # convert duration to seconds in database field
+      change Tunez.Music.Changes.MinutesToSeconds, only_when_valid?: true
     end
 
     update :update do
       primary? true
-      accept [:order, :name, :duration_seconds]
+      accept [:order, :name]
+      require_atomic? false
+      argument :duration, :string, allow_nil?: false
+      change Tunez.Music.Changes.MinutesToSeconds, only_when_valid?: true
     end
   end
 
@@ -46,13 +62,13 @@ defmodule Tunez.Music.Track do
   end
 
   preparations do
-    prepare build(load: [:number])
+    prepare build(load: [:number, :duration])
   end
 
   attributes do
     uuid_primary_key :id
     attribute :order, :integer, allow_nil?: false
-    attribute :name, :string, allow_nil?: false
+    attribute :name, :string, allow_nil?: false, public?: true
 
     attribute :duration_seconds, :integer do
       allow_nil? false
@@ -69,6 +85,7 @@ defmodule Tunez.Music.Track do
   end
 
   calculations do
-    calculate :number, :integer, expr(order + 1)
+    calculate :number, :integer, expr(order + 1), public?: true
+    calculate :duration, :string, Tunez.Music.Calculations.SecondsToMinutes, public?: true
   end
 end
