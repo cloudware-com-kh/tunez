@@ -292,6 +292,11 @@ defmodule Tunez.Accounts.User do
     policy action(:read) do
       authorize_if expr(id == ^actor(:id))
     end
+
+    policy action(:get_by_email) do
+      authorize_if expr(id == ^actor(:id))
+      authorize_if actor_attribute_equals(:role, :admin)
+    end
   end
 
   attributes do

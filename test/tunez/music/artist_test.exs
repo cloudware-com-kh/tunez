@@ -67,17 +67,16 @@ defmodule Tunez.Music.ArtistTest do
       # assert actual == ["first", "second", "third"]
     end
 
-    @tag :skip
     test "can sort by number of album releases" do
-      # generate(artist(name: "two", album_count: 2))
-      # generate(artist(name: "none"))
-      # generate(artist(name: "one", album_count: 1))
-      # generate(artist(name: "three", album_count: 3))
+      generate(artist(name: "two", album_count: 2))
+      generate(artist(name: "none"))
+      generate(artist(name: "one", album_count: 1))
+      generate(artist(name: "three", album_count: 3))
 
-      # actual =
-      #   names(Music.search_artists!("", query: [sort_input: "-album_count"]))
+      actual =
+        names(Music.search_artists!("", query: [sort_input: "-album_count"]))
 
-      # assert actual == ["three", "two", "one", "none"]
+      assert actual == ["three", "two", "one", "none"]
     end
 
     @tag :skip
@@ -182,22 +181,21 @@ defmodule Tunez.Music.ArtistTest do
   end
 
   describe "policies" do
-    # def setup_users do
-    #   %{
-    #     admin: generate(user(role: :admin)),
-    #     editor: generate(user(role: :editor)),
-    #     user: generate(user(role: :user))
-    #   }
-    # end
+    def setup_users do
+      %{
+        admin: generate(user(role: :admin)),
+        editor: generate(user(role: :editor)),
+        user: generate(user(role: :user))
+      }
+    end
 
-    @tag skip: "Also uncomment the `setup_users` function above"
     test "only admins can create new artists" do
-      # users = setup_users()
+      users = setup_users()
 
-      # assert Music.can_create_artist?(users.admin)
-      # refute Music.can_create_artist?(users.editor)
-      # refute Music.can_create_artist?(users.user)
-      # refute Music.can_create_artist?(nil)
+      assert Music.can_create_artist?(users.admin)
+      refute Music.can_create_artist?(users.editor)
+      refute Music.can_create_artist?(users.user)
+      refute Music.can_create_artist?(nil)
     end
 
     @tag skip: "Also uncomment the `setup_users` function above"
@@ -220,6 +218,14 @@ defmodule Tunez.Music.ArtistTest do
       # assert Music.can_update_artist?(users.editor, artist)
       # refute Music.can_update_artist?(users.user, artist)
       # refute Music.can_update_artist?(nil, artist)
+    end
+  end
+
+  describe "calculations" do
+    test "name_lengths show how many characters are in the name" do
+      assert Music.artist_name_length!("Hi") == 2
+      assert Music.artist_name_length!("Hello") == 5
+      refute Music.artist_name_length!("World") == 6
     end
   end
 end

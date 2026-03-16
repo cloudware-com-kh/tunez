@@ -1,24 +1,23 @@
 defmodule TunezWeb.JsonApi.AlbumTest do
   use TunezWeb.ConnCase, async: true
 
-  # import AshJsonApi.Test
+  import AshJsonApi.Test
 
-  @tag skip: "Also uncomment the import at the top of this file"
   test "can read an artist's albums" do
-    # artist = generate(artist())
-    # generate(album(artist_id: artist.id, name: "first!", year_released: 2020))
-    # generate(album(artist_id: artist.id, name: "second!", year_released: 2022))
+    artist = generate(artist())
+    generate(album(artist_id: artist.id, name: "first!", year_released: 2020))
+    generate(album(artist_id: artist.id, name: "second!", year_released: 2022))
 
-    # get(
-    #   Tunez.Music,
-    #   "/artists/#{artist.id}/albums",
-    #   router: TunezWeb.AshJsonApiRouter,
-    #   status: 200
-    # )
-    # |> assert_data_matches([
-    #   %{"attributes" => %{"name" => "second!"}},
-    #   %{"attributes" => %{"name" => "first!"}}
-    # ])
+    get(
+      Tunez.Music,
+      "/artists/#{artist.id}/albums",
+      router: TunezWeb.AshJsonApiRouter,
+      status: 200
+    )
+    |> assert_data_matches([
+      %{"attributes" => %{"name" => "second!"}},
+      %{"attributes" => %{"name" => "first!"}}
+    ])
   end
 
   @tag skip: "Also uncomment the import at the top of this file"

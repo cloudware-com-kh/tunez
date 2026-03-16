@@ -70,7 +70,7 @@ defmodule Tunez.Music.Artist do
       authorize_if always()
     end
 
-    policy action([:create, :update]) do
+    policy action(:update) do
       authorize_if actor_attribute_equals(:role, :editor)
     end
 
@@ -113,9 +113,7 @@ defmodule Tunez.Music.Artist do
   end
 
   calculations do
-    # calculate :album_count, :integer, expr(count(albums))
-    # calculate :latest_album_year_released, :integer, expr(first(albums, field: :year_released))
-    # calculate :cover_image_url, :string, expr(first(albums, field: :cover_image_url))
+    calculate :name_length, :integer, expr(fragment("length(?)", name))
   end
 
   aggregates do

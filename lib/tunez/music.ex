@@ -13,6 +13,8 @@ defmodule Tunez.Music do
       create Tunez.Music.Artist, :create_artist, :create
       update Tunez.Music.Artist, :update_artist, :update
       destroy Tunez.Music.Artist, :destroy_artist, :destroy
+      # album
+      create Tunez.Music.Album, :create_album, :create
     end
   end
 
@@ -53,6 +55,8 @@ defmodule Tunez.Music do
         default_options: [
           load: [:album_count, :latest_album_year_released, :cover_image_url]
         ]
+
+      define_calculation :artist_name_length, calculation: :name_length, args: [{:ref, :name}]
     end
 
     resource Tunez.Music.Album do

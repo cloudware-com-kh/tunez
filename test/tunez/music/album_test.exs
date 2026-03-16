@@ -5,19 +5,18 @@ defmodule TunezWeb.Music.AlbumTest do
   alias Tunez.Music, warn: false
 
   describe "Tunez.Music.create_album/1-2" do
-    @tag :skip
     test "stores the actor that created the record" do
-      # actor = generate(user(role: :admin))
-      # artist = generate(artist())
+      actor = generate(user(role: :admin))
+      artist = generate(artist())
 
-      # album =
-      #   Music.create_album!(
-      #     %{name: "New Album", artist_id: artist.id, year_released: 2024},
-      #     actor: actor
-      #   )
+      album =
+        Music.create_album!(
+          %{name: "New Album", artist_id: artist.id, year_released: 2024},
+          actor: actor
+        )
 
-      # assert album.created_by_id == actor.id
-      # assert album.updated_by_id == actor.id
+      assert album.created_by_id == actor.id
+      assert album.updated_by_id == actor.id
     end
 
     @tag skip: "can be enabled during chapter 10"
@@ -153,28 +152,27 @@ defmodule TunezWeb.Music.AlbumTest do
   end
 
   describe "validations" do
-    @tag :skip
     test "year_released must be between 1950 and next year" do
-      # admin = generate(user(role: :admin))
-      # artist = generate(artist())
+      admin = generate(user(role: :admin))
+      artist = generate(artist())
 
-      # # The assertion isn't really needed here, but we want to signal to
-      # # our future selves that this is part of the test, not the setup.
-      # assert %{artist_id: artist.id, name: "test 2024", year_released: 2024}
-      #        |> Music.create_album!(actor: admin)
+      # The assertion isn't really needed here, but we want to signal to
+      # our future selves that this is part of the test, not the setup.
+      assert %{artist_id: artist.id, name: "test 2024", year_released: 2024}
+             |> Music.create_album!(actor: admin)
 
-      # # Using `assert_raise`
-      # assert_raise Ash.Error.Invalid, ~r/must be between 1950 and next year/, fn ->
-      #   %{artist_id: artist.id, name: "test 1925", year_released: 1925}
-      #   |> Music.create_album!(actor: admin)
-      # end
+      # Using `assert_raise`
+      assert_raise Ash.Error.Invalid, ~r/must be between 1950 and next year/, fn ->
+        %{artist_id: artist.id, name: "test 1925", year_released: 1925}
+        |> Music.create_album!(actor: admin)
+      end
 
-      # # Using `assert_has_error` - note the lack of bang to return the error
-      # %{artist_id: artist.id, name: "test 1950", year_released: 1950}
-      # |> Music.create_album(actor: admin)
-      # |> Ash.Test.assert_has_error(Ash.Error.Invalid, fn error ->
-      #   match?(%{message: "must be between 1950 and next year"}, error)
-      # end)
+      # Using `assert_has_error` - note the lack of bang to return the error
+      %{artist_id: artist.id, name: "test 1950", year_released: 1950}
+      |> Music.create_album(actor: admin)
+      |> Ash.Test.assert_has_error(Ash.Error.Invalid, fn error ->
+        match?(%{message: "must be between 1950 and next year"}, error)
+      end)
     end
 
     @tag :skip
@@ -202,6 +200,13 @@ defmodule TunezWeb.Music.AlbumTest do
       # |> assert_has_error(fn error ->
       #   error.field == :cover_image_url && error.message == "must start with https:// or /images/"
       # end)
+    end
+
+    test "users cannot see who created the album" do
+      user = generate(user())
+      album = generate(album())
+      assert Ash.load!(album, :created_by, authorize?: false).created_by
+      refute Ash.load!(album, :created_by, actor: user).created_by
     end
   end
 end

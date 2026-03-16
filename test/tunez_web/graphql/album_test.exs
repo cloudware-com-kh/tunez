@@ -2,33 +2,32 @@ defmodule TunezWeb.Graphql.AlbumTest do
   use TunezWeb.ConnCase, async: true
 
   describe "mutations" do
-    @tag :skip
     test "createAlbum" do
-      # user = generate(user(role: :admin))
-      # artist = generate(artist())
+      user = generate(user(role: :admin))
+      artist = generate(artist())
 
-      # assert {:ok, resp} =
-      #          """
-      #          mutation createAlbum($input: CreateAlbumInput!) {
-      #            createAlbum(input: $input) {
-      #              result { name }
-      #              errors { message }
-      #            }
-      #          }
-      #          """
-      #          |> Absinthe.run(TunezWeb.GraphqlSchema,
-      #            variables: %{
-      #              "input" => %{
-      #                "artistId" => artist.id,
-      #                "name" => "New Album",
-      #                "yearReleased" => 2022
-      #              }
-      #            },
-      #            context: %{actor: user}
-      #          )
+      assert {:ok, resp} =
+               """
+               mutation createAlbum($input: CreateAlbumInput!) {
+                 createAlbum(input: $input) {
+                   result { name }
+                   errors { message }
+                 }
+               }
+               """
+               |> Absinthe.run(TunezWeb.GraphqlSchema,
+                 variables: %{
+                   "input" => %{
+                     "artistId" => artist.id,
+                     "name" => "New Album",
+                     "yearReleased" => 2022
+                   }
+                 },
+                 context: %{actor: user}
+               )
 
-      # assert Enum.empty?(resp.data["createAlbum"]["errors"])
-      # assert resp.data["createAlbum"]["result"]["name"] == "New Album"
+      assert Enum.empty?(resp.data["createAlbum"]["errors"])
+      assert resp.data["createAlbum"]["result"]["name"] == "New Album"
     end
 
     @tag :skip

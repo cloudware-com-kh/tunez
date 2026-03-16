@@ -1,17 +1,11 @@
 defmodule Tunez.Lab do
-  @email "admin@mail.com"
-  @password "password"
+  def run() do
+    # %Tunez.Music.Artist{name: "Hi"}
+    # |> Ash.load!(:name_length)
 
-  def register_user() do
-    user =
-      Tunez.Accounts.User
-      |> Ash.Changeset.for_create(:register_with_password, %{
-        email: @email,
-        password: @password,
-        password_confirmation: @password
-      })
-      |> Ash.create!()
-
-    Tunez.Accounts.set_user_role(user.id, :editor, authorize?: false)
+    # Ash.calculate(Tunez.Music.Artist, :name_length, refs: %{name: "Hi"})
+    Tunez.Music.artist_name_length("Hi")
   end
 end
+
+# recompile; Tunez.Lab.run()
