@@ -129,10 +129,12 @@ defmodule Tunez.Music.Artist do
 
     calculate :followed_by_me,
               :boolean,
-              expr(exists(follower_relationships, follower_id == ^actor(:id)))
+              expr(exists(follower_relationships, follower_id == ^actor(:id))),
+              public?: true
   end
 
   aggregates do
+    count :follower_count, :follower_relationships, public?: true
     count :album_count, :albums, public?: true
     first :latest_album_year_released, :albums, field: :year_released, public?: true
     first :cover_image_url, :albums, field: :cover_image_url, public?: true

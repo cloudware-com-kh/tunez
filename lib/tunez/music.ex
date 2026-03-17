@@ -55,7 +55,13 @@ defmodule Tunez.Music do
         action: :search,
         args: [:query],
         default_options: [
-          load: [:followed_by_me, :album_count, :latest_album_year_released, :cover_image_url]
+          load: [
+            :follower_count,
+            :followed_by_me,
+            :album_count,
+            :latest_album_year_released,
+            :cover_image_url
+          ]
         ]
 
       define_calculation :artist_name_length, calculation: :name_length, args: [{:ref, :name}]
