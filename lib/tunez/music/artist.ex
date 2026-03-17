@@ -110,10 +110,26 @@ defmodule Tunez.Music.Artist do
 
     belongs_to :created_by, Tunez.Accounts.User
     belongs_to :updated_by, Tunez.Accounts.User
+    # start many to many with users =========
+    has_many :follower_relationships, Tunez.Music.ArtistFollower
+
+    many_to_many :followers, Tunez.Accounts.User do
+      join_relationship :follower_relationships
+      # source_attribute :id
+      # destination_attribute :id
+      # source_attribute_on_join_resource :artist_id
+      destination_attribute_on_join_resource :follower_id
+    end
+
+    # end many to many with users ===========
   end
 
   calculations do
     calculate :name_length, :integer, expr(fragment("length(?)", name))
+
+    calculate :followed_by_me,
+              :boolean,
+              expr(exists(follower_relationships, follower_id == ^actor(:id)))
   end
 
   aggregates do
