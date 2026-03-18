@@ -105,7 +105,7 @@ defmodule TunezWeb.Artists.IndexLive do
     ~H"""
     <span class="mt-2 text-sm leading-6 text-zinc-500">
       {@artist.album_count} {ngettext("album", "albums", @artist.album_count)},
-      latest release {@artist.latest_album_year_released}
+      latest release {@artist.latest_album_year_released}, {@artist.album_likes_count} likes
     </span>
     """
   end

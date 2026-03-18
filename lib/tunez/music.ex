@@ -56,6 +56,7 @@ defmodule Tunez.Music do
         args: [:query],
         default_options: [
           load: [
+            :album_likes_count,
             :follower_count,
             :followed_by_me,
             :album_count,

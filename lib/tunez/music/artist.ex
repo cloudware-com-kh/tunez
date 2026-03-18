@@ -134,6 +134,7 @@ defmodule Tunez.Music.Artist do
   end
 
   aggregates do
+    sum :album_likes_count, :albums, :likes_count
     count :follower_count, :follower_relationships, public?: true
     count :album_count, :albums, public?: true
     first :latest_album_year_released, :albums, field: :year_released, public?: true
