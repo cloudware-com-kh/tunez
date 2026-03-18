@@ -101,5 +101,18 @@ defmodule Tunez.Music do
         end
       end
     end
+
+    resource Tunez.Music.AlbumLike do
+      define :like_album do
+        action :create
+        args [:album_id]
+      end
+
+      define :unlike_album do
+        action :destroy
+        args [:album_id]
+        get? true
+      end
+    end
   end
 end

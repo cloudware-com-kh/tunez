@@ -10,7 +10,7 @@ defmodule TunezWeb.Artists.ShowLive do
   def handle_params(%{"id" => artist_id}, _url, socket) do
     artist =
       Tunez.Music.get_artist_by_id!(artist_id,
-        load: [:followed_by_me, albums: [:duration, :tracks]],
+        load: [:followed_by_me, albums: [:duration, :tracks, :likes_count, :liked_by_me]],
         actor: socket.assigns.current_user
       )
 
@@ -82,6 +82,14 @@ defmodule TunezWeb.Artists.ShowLive do
     <div id={"album-#{@album.id}"} class="md:flex gap-8 group">
       <div class="mx-auto mb-6 md:mb-0 w-2/3 md:w-72 lg:w-96">
         <.cover_image image={@album.cover_image_url} />
+        <div class="mt-2 flex items-center gap-2 border border-gray-200 rounded-full w-fit px-2 py-1">
+          <span class="text-md font-semibold text-gray-500">{@album.likes_count}</span>
+          <.like_toggle
+            :if={Tunez.Music.can_like_album?(@current_user, @album)}
+            album_id={@album.id}
+            on={@album.liked_by_me}
+          />
+        </div>
       </div>
       <div class="flex-1">
         <.header class="pl-3 pr-2 !m-0">
@@ -166,6 +174,29 @@ defmodule TunezWeb.Artists.ShowLive do
     """
   end
 
+  def like_toggle(assigns) do
+    album_id = assigns.album_id
+
+    event =
+      if assigns.on do
+        JS.push("unlike", value: %{album_id: album_id})
+      else
+        JS.push("like", value: %{album_id: album_id})
+        |> JS.transition("animate-spin")
+      end
+
+    assigns = assign(assigns, :event, event)
+
+    ~H"""
+    <span phx-click={@event} class="inline-block">
+      <.icon
+        name={if @on, do: "hero-heart-solid", else: "hero-heart"}
+        class="size-6 bg-red-400 -mt-1.5 cursor-pointer"
+      />
+    </span>
+    """
+  end
+
   def handle_event("destroy-artist", _params, socket) do
     Tunez.Music.destroy_artist(socket.assigns.artist, actor: socket.assigns.current_user)
     |> case do
@@ -237,5 +268,44 @@ defmodule TunezWeb.Artists.ShowLive do
       end
 
     {:noreply, socket}
+  end
+
+  def handle_event("like", %{"album_id" => album_id}, socket) do
+    socket =
+      case Tunez.Music.like_album(album_id, actor: socket.assigns.current_user) do
+        {:ok, _} ->
+          update(socket, :artist, &update_album_likes(&1, album_id, true))
+
+        {:error, _} ->
+          put_flash(socket, :error, "Could not like album")
+      end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("unlike", %{"album_id" => album_id}, socket) do
+    socket =
+      case Tunez.Music.unlike_album(album_id, actor: socket.assigns.current_user) do
+        :ok ->
+          update(socket, :artist, &update_album_likes(&1, album_id, false))
+
+        {:error, _} ->
+          put_flash(socket, :error, "Could not unlike album")
+      end
+
+    {:noreply, socket}
+  end
+
+  defp update_album_likes(artist, album_id, on?) do
+    albums =
+      Enum.map(artist.albums, fn album ->
+        if album.id == album_id do
+          %{album | liked_by_me: on?, likes_count: album.likes_count + if(on?, do: 1, else: -1)}
+        else
+          album
+        end
+      end)
+
+    %{artist | albums: albums}
   end
 end

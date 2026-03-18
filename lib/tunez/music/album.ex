@@ -103,6 +103,13 @@ defmodule Tunez.Music.Album do
 
     belongs_to :created_by, Tunez.Accounts.User
     belongs_to :updated_by, Tunez.Accounts.User
+    # album likes
+    has_many :like_relationships, Tunez.Music.AlbumLike
+
+    many_to_many :likes, Tunez.Accounts.User do
+      join_relationship :like_relationships
+      destination_attribute_on_join_resource :like_id
+    end
   end
 
   def next_year, do: Date.utc_today().year + 1
@@ -116,9 +123,11 @@ defmodule Tunez.Music.Album do
               public?: true
 
     calculate :duration, :string, Tunez.Music.Calculations.SecondsToMinutes
+    calculate :liked_by_me, :boolean, expr(exists(like_relationships, like_id == ^actor(:id)))
   end
 
   aggregates do
+    count :likes_count, :like_relationships
     sum :duration_seconds, :tracks, :duration_seconds
   end
 
