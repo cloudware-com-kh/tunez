@@ -1,26 +1,22 @@
 defmodule Tunez.Lab do
-  import Tunez.Generator
+  @email "admin@example.com"
 
-  def run() do
-    generate(
-      user(
-        role: :admin,
-        email: "admin@example.com"
-      )
-    )
+  def bulk_action() do
+    actor = Tunez.Accounts.get_user_by_email!(@email, authorize?: false)
 
-    generate(user(role: :editor, email: "editor@example.com"))
-  end
+    artists = [
+      %{name: "Artist #{Faker.Lorem.word()}"},
+      %{name: "Artist #{Faker.Lorem.word()}"},
+      %{name: "Artist #{Faker.Lorem.word()}"}
+    ]
 
-  def create_album() do
-    actor = generate(user(role: :editor))
-    artist = generate(artist())
-
-    Tunez.Music.create_album!(%{name: "New Album", year_released: 2024, artist_id: artist.id},
+    Tunez.Music.create_artist!(artists,
       actor: actor
+      # bulk_options: [
+      #   return_records?: true
+      # ]
     )
   end
 end
 
-# recompile; Tunez.Lab.run()
-# recompile; Tunez.Lab.create_album()
+# recompile; Tunez.Lab.bulk_action()
