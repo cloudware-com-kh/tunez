@@ -1,6 +1,10 @@
 defmodule Tunez.Music.Changes.MinutesToSeconds do
   use Ash.Resource.Change
 
+  def atomic(changeset, opts, context) do
+    {:ok, change(changeset, opts, context)}
+  end
+
   def change(changeset, _opts, _context) do
     {:ok, duration} = Ash.Changeset.fetch_argument(changeset, :duration)
 

@@ -37,6 +37,20 @@ defmodule Tunez.Music.Artist do
   actions do
     defaults [:read]
 
+    update :increase_counter do
+      # inline
+      # change atomic_update(:counter, expr(counter + 1))
+      # module
+      change {Tunez.Music.Changes.Counter, increase: true}
+    end
+
+    update :decrease_counter do
+      # inline
+      # change atomic_update(:counter, expr(counter - 1))
+      # module
+      change {Tunez.Music.Changes.Counter, decrease: true}
+    end
+
     read :search do
       description "List Artists, optionally filtering by name."
 
@@ -57,7 +71,6 @@ defmodule Tunez.Music.Artist do
 
     update :update do
       accept [:name, :biography]
-      require_atomic? false
       change Tunez.Music.Changes.UpdatePreviousNames, where: [changing(:name)]
     end
 
@@ -100,6 +113,7 @@ defmodule Tunez.Music.Artist do
     end
 
     attribute :biography, :string, public?: true
+    attribute :counter, :integer, default: 0
 
     timestamps(public?: true)
   end

@@ -37,6 +37,22 @@ defmodule TunezWeb.Artists.ShowLive do
           formerly known as: {Enum.join(@artist.previous_names, ", ")}
         </:subtitle>
         <:action>
+          Current Counter: {@artist.counter}
+          <.button_link
+            kind="primary"
+            inverse
+            phx-click="increase-counter"
+          >
+            Increase Counter
+          </.button_link>
+
+          <.button_link
+            kind="primary"
+            inverse
+            phx-click="decrease-counter"
+          >
+            Decrease Counter
+          </.button_link>
           <.button_link
             :if={Tunez.Music.can_destroy_artist?(@current_user, @artist)}
             kind="error"
@@ -291,6 +307,36 @@ defmodule TunezWeb.Artists.ShowLive do
 
         {:error, _} ->
           put_flash(socket, :error, "Could not unlike album")
+      end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("increase-counter", _params, socket) do
+    socket =
+      case Tunez.Music.increase_artist_counter(socket.assigns.artist,
+             actor: socket.assigns.current_user
+           ) do
+        {:ok, %{counter: counter}} ->
+          update(socket, :artist, &%{&1 | counter: counter})
+
+        {:error, _} ->
+          put_flash(socket, :error, "Could not increase artist counter")
+      end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("decrease-counter", _params, socket) do
+    socket =
+      case Tunez.Music.decrease_artist_counter(socket.assigns.artist,
+             actor: socket.assigns.current_user
+           ) do
+        {:ok, %{counter: counter}} ->
+          update(socket, :artist, &%{&1 | counter: counter})
+
+        {:error, _} ->
+          put_flash(socket, :error, "Could not decrease artist counter")
       end
 
     {:noreply, socket}

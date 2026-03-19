@@ -38,7 +38,6 @@ defmodule Tunez.Music.Track do
     update :update do
       primary? true
       accept [:order, :name]
-      require_atomic? false
       argument :duration, :string, allow_nil?: false
       change Tunez.Music.Changes.MinutesToSeconds, only_when_valid?: true
     end
