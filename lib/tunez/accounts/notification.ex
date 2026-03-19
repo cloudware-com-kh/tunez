@@ -12,12 +12,12 @@ defmodule Tunez.Accounts.Notification do
 
     references do
       reference :user, index?: true, on_delete: :delete
-      reference :album, index?: true, on_delete: :delete
+      reference :album, index?: true
     end
   end
 
   actions do
-    defaults [:destroy]
+    defaults [:read, :destroy]
 
     create :create do
       accept [:user_id, :album_id]
@@ -34,11 +34,16 @@ defmodule Tunez.Accounts.Notification do
       forbid_if always()
     end
 
+    policy action(:read) do
+      authorize_if expr(album.can_manage_album?)
+    end
+
     policy action(:for_user) do
       authorize_if actor_present()
     end
 
     policy action([:destroy]) do
+      authorize_if expr(album.can_manage_album?)
       authorize_if relates_to_actor_via(:user)
     end
   end
@@ -52,6 +57,7 @@ defmodule Tunez.Accounts.Notification do
     end
 
     publish :create, [:user_id]
+    publish :destroy, [:user_id]
   end
 
   attributes do

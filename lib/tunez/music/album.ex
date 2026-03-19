@@ -20,15 +20,20 @@ defmodule Tunez.Music.Album do
     repo Tunez.Repo
 
     references do
-      reference :artist, index?: true, on_delete: :delete
+      reference :artist, index?: true
       reference :created_by, index?: true
       reference :updated_by, index?: true
     end
   end
 
   actions do
-    defaults [:read, :destroy]
+    defaults [:read]
     default_accept [:name, :year_released, :cover_image_url]
+
+    destroy :destroy do
+      primary? true
+      change cascade_destroy(:notifications, return_notifications?: true, after_action?: false)
+    end
 
     create :create do
       accept [:name, :year_released, :cover_image_url]
@@ -60,7 +65,7 @@ defmodule Tunez.Music.Album do
     end
 
     policy action([:update, :destroy]) do
-      authorize_if expr(created_by_id == ^actor(:id) and ^actor(:role) == :editor)
+      authorize_if expr(can_manage_album?)
     end
   end
 
@@ -111,6 +116,8 @@ defmodule Tunez.Music.Album do
       join_relationship :like_relationships
       destination_attribute_on_join_resource :like_id
     end
+
+    has_many :notifications, Tunez.Accounts.Notification
   end
 
   def next_year, do: Date.utc_today().year + 1
@@ -125,10 +132,18 @@ defmodule Tunez.Music.Album do
 
     calculate :duration, :string, Tunez.Music.Calculations.SecondsToMinutes
     calculate :liked_by_me, :boolean, expr(exists(like_relationships, like_id == ^actor(:id)))
+    calculate :likes_count, :integer, expr(count(like_relationships))
+
+    calculate :can_manage_album?,
+              :boolean,
+              expr(
+                ^actor(:role) == :admin or
+                  (^actor(:role) == :editor and created_by_id == ^actor(:id))
+              )
   end
 
   aggregates do
-    count :likes_count, :like_relationships
+    # count :likes_count, :like_relationships
     sum :duration_seconds, :tracks, :duration_seconds
   end
 
