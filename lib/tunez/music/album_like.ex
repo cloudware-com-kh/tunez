@@ -3,7 +3,8 @@ defmodule Tunez.Music.AlbumLike do
     otp_app: :tunez,
     domain: Tunez.Music,
     data_layer: AshPostgres.DataLayer,
-    authorizers: [Ash.Policy.Authorizer]
+    authorizers: [Ash.Policy.Authorizer],
+    notifiers: [Ash.Notifier.PubSub]
 
   postgres do
     table "album_likes"
@@ -37,6 +38,19 @@ defmodule Tunez.Music.AlbumLike do
     policy action_type(:read) do
       authorize_if always()
     end
+  end
+
+  pub_sub do
+    prefix "album_likes"
+    module TunezWeb.Endpoint
+
+    transform fn notification ->
+      album_id = Map.get(notification.data, :album_id)
+      %{album_id: album_id, from: notification.from}
+    end
+
+    publish :create, [:album_id]
+    publish :destroy, [:album_id]
   end
 
   relationships do

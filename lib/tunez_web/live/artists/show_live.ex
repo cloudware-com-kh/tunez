@@ -14,12 +14,22 @@ defmodule TunezWeb.Artists.ShowLive do
         actor: socket.assigns.current_user
       )
 
+    # subscribe to album likes notifications
+    if connected?(socket) do
+      subscribe(artist)
+    end
+
     socket =
       socket
       |> assign(:artist, artist)
       |> assign(:page_title, artist.name)
 
     {:noreply, socket}
+  end
+
+  defp subscribe(artist) do
+    Enum.map(artist.albums, & &1.id)
+    |> Enum.each(&TunezWeb.Endpoint.subscribe("album_likes:#{&1}"))
   end
 
   def render(assigns) do
@@ -37,22 +47,6 @@ defmodule TunezWeb.Artists.ShowLive do
           formerly known as: {Enum.join(@artist.previous_names, ", ")}
         </:subtitle>
         <:action>
-          Current Counter: {@artist.counter}
-          <.button_link
-            kind="primary"
-            inverse
-            phx-click="increase-counter"
-          >
-            Increase Counter
-          </.button_link>
-
-          <.button_link
-            kind="primary"
-            inverse
-            phx-click="decrease-counter"
-          >
-            Decrease Counter
-          </.button_link>
           <.button_link
             :if={Tunez.Music.can_destroy_artist?(@current_user, @artist)}
             kind="error"
@@ -340,6 +334,44 @@ defmodule TunezWeb.Artists.ShowLive do
       end
 
     {:noreply, socket}
+  end
+
+  def handle_info(
+        %{
+          topic: "album_likes:" <> _,
+          payload: %{
+            album_id: album_id,
+            from: from
+          }
+        },
+        socket
+      ) do
+    if self() != from do
+      %{likes_count: likes_count, liked_by_me: liked_by_me} =
+        Tunez.Music.get_album_by_id!(album_id,
+          load: [:likes_count, :liked_by_me],
+          actor: socket.assigns.current_user
+        )
+
+      {:noreply,
+       update(socket, :artist, &update_album_likes(&1, album_id, likes_count, liked_by_me))}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  defp update_album_likes(artist, album_id, likes_count, liked_by_me) do
+    albums =
+      artist.albums
+      |> Enum.map(fn album ->
+        if album.id == album_id do
+          %{album | likes_count: likes_count, liked_by_me: liked_by_me}
+        else
+          album
+        end
+      end)
+
+    %{artist | albums: albums}
   end
 
   defp update_album_likes(artist, album_id, on?) do
