@@ -70,7 +70,7 @@ defmodule Tunez.Accounts.User do
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy]
 
     update :set_role do
       accept [:role]
@@ -296,6 +296,10 @@ defmodule Tunez.Accounts.User do
     policy action(:get_by_email) do
       authorize_if expr(id == ^actor(:id))
       authorize_if actor_attribute_equals(:role, :admin)
+    end
+
+    policy action(:destroy) do
+      forbid_if always()
     end
   end
 

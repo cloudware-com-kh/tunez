@@ -91,6 +91,7 @@ defmodule Tunez.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate"],
       seed: [
         # "run priv/repo/seeds/insert-million-artists.exs"
+        "run priv/repo/seeds/00-users.exs",
         "run priv/repo/seeds/01-artists.exs",
         "run priv/repo/seeds/02-albums.exs",
         "run priv/repo/seeds/08-tracks.exs"

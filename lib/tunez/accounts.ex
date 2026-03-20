@@ -40,6 +40,7 @@ defmodule Tunez.Accounts do
     resource Tunez.Accounts.User do
       define :set_user_role, action: :set_role, args: [:role]
       define :get_user_by_email, action: :get_by_email, args: [:email]
+      define :destroy_user, action: :destroy
     end
 
     resource Tunez.Accounts.Token
